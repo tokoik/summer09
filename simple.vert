@@ -1,4 +1,4 @@
-﻿#version 120
+#version 120
 //
 // simple.vert
 //
@@ -9,7 +9,7 @@ varying vec3 diffuseColor;
 uniform vec3 lightDirection;
 uniform vec3 lightColor;
 varying vec2 t;
- 
+
 void main(void)
 {
   t = position.xy * 4.0;
