@@ -97,7 +97,7 @@
 
 ### 6.1 格子模様と discard による型抜き (simple.frag)
 
-```glsl
+`glsl
 #version 120
 
 varying vec3 diffuseColor;
@@ -109,4 +109,56 @@ void main(void)
   if (mod(floor(t.x) + floor(t.y), 2.0) == 0.0) discard;
   gl_FragColor = vec4(diffuseColor * c1, 1.0);
 }
-```
+`
+
+### 6.2 図形の描画 (display)
+
+`cpp
+/* 画面クリア */
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+/* 隠面消去処理を有効にする */
+glEnable(GL_DEPTH_TEST);
+
+/* プログラムオブジェクトを適用する */
+glUseProgram(gl2Program);
+
+/* 投影変換行列の uniform 変数 projectionMatrix に変換行列の値を設定する */
+glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, projectionMatrix);
+
+/* uniform 変数 lightDirection に光源の方向を設定する */
+glUniform3fv(lightDirectionLocation, 1, lightDirection);
+
+/* uniform 変数 lightColor に光源の色を設定する */
+glUniform3fv(lightColorLocation, 1, lightColor);
+
+/* 頂点バッファオブジェクトとして buffer[0] を指定する */
+glBindBuffer(GL_ARRAY_BUFFER, buffer[0]);
+
+/* index が 0 の attribute 変数を有効にする */
+glEnableVertexAttribArray(0);
+
+/* index が 0 の attribute 変数に頂点バッファオブジェクトの場所と書式を設定する */
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+/* 頂点バッファオブジェクトの指標として buffer[1] を指定する */
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer[1]);
+
+/* 図形を描く */
+glDrawElements(GL_TRIANGLES, points, GL_UNSIGNED_INT, 0);
+
+/* index が 0 の attribute 変数を無効にする */
+glDisableVertexAttribArray(0);
+
+/* 頂点バッファオブジェクトを解放する */
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+/* 固定機能に戻す */
+glUseProgram(0);
+
+/* 隠面消去処理を無効にする */
+glDisable(GL_DEPTH_TEST);
+
+glFlush();
+`
